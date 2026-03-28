@@ -55,7 +55,8 @@ const CATEGORY_OPTIONS: { value: CategoryFilter; label: string }[] = [
   { value: "Reasoning", label: "Dx Review" },
 ];
 
-function getActionType(action: string): CategoryFilter {
+function getActionType(action?: string): CategoryFilter {
+  if (!action) return "Reasoning";
   const lower = action.toLowerCase();
   if (lower.includes("medication")) return "Medication";
   if (lower.includes("lab")) return "Lab";
@@ -131,32 +132,36 @@ export default function VigilMD({
     setDashboardInfo([]);
     setViewMode("split");
 
-    try {
-      await Promise.all(
-        DASHBOARD_TYPES.map(async (dashboardName) => {
-          const result = await get_individual_dashboard_info({
-            hp: note,
-            dashboard_name: dashboardName,
-            model: ai_model,
-            // prompt_overrides reserved for future per-category prompt customization
-          });
+    const results = await Promise.allSettled(
+      DASHBOARD_TYPES.map(async (dashboardName) => {
+        const result = await get_individual_dashboard_info({
+          hp: note,
+          dashboard_name: dashboardName,
+          model: ai_model,
+        });
 
-          setLoadingStates((prev) => ({ ...prev, [dashboardName]: false }));
+        setLoadingStates((prev) => ({ ...prev, [dashboardName]: false }));
 
-          log(`Got result for: ${dashboardName}`);
-          debug.add(`${dashboardName}_result`, result);
+        log(`Got result for: ${dashboardName}`);
+        debug.add(`${dashboardName}_result`, result);
 
-          if (result) {
-            setDashboardInfo((prev) => [...(prev || []), ...result]);
-          }
-        })
+        if (result) {
+          setDashboardInfo((prev) => [...(prev || []), ...result]);
+        }
+
+        return { dashboardName, result };
+      })
+    );
+
+    // Log any failures but don't wipe successful results
+    const failures = results.filter(
+      (r): r is PromiseRejectedResult => r.status === "rejected"
+    );
+    if (failures.length > 0) {
+      failures.forEach((f) =>
+        log(`Dashboard call failed: ${f.reason?.message || f.reason}`)
       );
-    } catch (error) {
-      log("Error in deep analysis: " + (error instanceof Error ? error.message : String(error)));
-      setDashboardInfo([
-        { error: "There was an error during deep analysis" },
-      ]);
-      setViewMode("results");
+      debug.add("analyze_failures", failures.map((f) => f.reason?.message || String(f.reason)));
     }
 
     setLoadingStates({});

@@ -25,6 +25,7 @@ export async function generate_hp(ops: {
       },
       { role: "user", content: prompt },
     ],
+    call_id: "vigilmd_generate_hp",
   });
 
   debug.add("hp_content", response.content);
@@ -91,7 +92,7 @@ export async function get_individual_dashboard_info(ops: {
   log("Generated dashboard prompt: " + dashboard_prompt);
 
   const response = await llmCall({
-    model: model || "gpt-4o",
+    model: model || default_model,
     messages: [
       {
         role: "system",
@@ -100,9 +101,10 @@ export async function get_individual_dashboard_info(ops: {
       },
       { role: "user", content: dashboard_prompt },
     ],
+    call_id: `vigilmd_${dashboard_name}`,
   });
 
-  debug.add("content", response.content);
+  debug.add(`${dashboard_name}_content`, response.content);
 
   const dashboard_info = extractJsonArray(response.content);
   debug.add("dashboard_info", dashboard_info);
@@ -147,12 +149,13 @@ export async function get_handoff(ops: {
   debug.add("handoff_prompt", prompt);
 
   const response = await llmCall({
-    model: model || "gpt-4o-mini-2024-07-18",
+    model: model || default_model,
     messages: [
       { role: "system", content: "you are an expert medical assistant" },
       { role: "user", content: prompt },
     ],
     response_format,
+    call_id: "vigilmd_handoff",
   });
 
   log("Received handoff response!");
