@@ -25,7 +25,11 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
-          output_location: ".next"
+          api_location: ""
+          output_location: ""
+        env:
+          HIPAA_GPT5_URL: ${{ secrets.HIPAA_GPT5_URL }}
+          HIPAA_GPT5_KEY: ${{ secrets.HIPAA_GPT5_KEY }}
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
