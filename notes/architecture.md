@@ -16,7 +16,7 @@ washuinformatics/
 │   │   ├── vigilmd/                  # VigilMD app
 │   │   │   ├── page.tsx
 │   │   │   ├── VigilMDApp.tsx        # App shell + settings toggle
-│   │   │   ├── AutocareSimple.tsx    # Main widget (analyze, handoff)
+│   │   │   ├── VigilMD.tsx           # Main widget (analyze, handoff)
 │   │   │   ├── DashboardCard.tsx     # Insight result card
 │   │   │   ├── HandoffDisplay.tsx    # Handoff renderer
 │   │   │   ├── PromptEditor.tsx      # Settings (conciseness levels + examples)

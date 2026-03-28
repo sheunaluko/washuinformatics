@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AutocareSimple from "./AutocareSimple";
+import VigilMD from "./VigilMD";
 import PromptEditor, {
   loadCustomPrompts,
   type CustomPrompts,
@@ -55,7 +55,7 @@ export default function VigilMDApp() {
             }}
           />
         ) : (
-          <AutocareSimple customPrompts={customPrompts} />
+          <VigilMD customPrompts={customPrompts} />
         )}
       </div>
     </div>

@@ -56,12 +56,13 @@ const CATEGORY_OPTIONS: { value: CategoryFilter; label: string }[] = [
 ];
 
 function getActionType(action: string): CategoryFilter {
-  if (action.includes("medication")) return "Medication";
-  if (action.includes("lab")) return "Lab";
-  if (action.includes("imaging")) return "Imaging";
-  if (action.includes("Agree") || action.includes("Reconsider"))
+  const lower = action.toLowerCase();
+  if (lower.includes("medication")) return "Medication";
+  if (lower.includes("lab")) return "Lab";
+  if (lower.includes("imaging")) return "Imaging";
+  if (lower.includes("agree") || lower.includes("reconsider") || lower.includes("diagnosis"))
     return "Reasoning";
-  return "Medication"; // fallback
+  return "Reasoning";
 }
 
 function ToggleGroup<T extends string>({
@@ -92,7 +93,7 @@ function ToggleGroup<T extends string>({
   );
 }
 
-export default function AutocareSimple({
+export default function VigilMD({
   customPrompts,
 }: {
   customPrompts?: CustomPrompts | null;
