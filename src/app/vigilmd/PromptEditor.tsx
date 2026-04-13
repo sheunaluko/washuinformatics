@@ -5,16 +5,24 @@ import {
   default_conciseness_levels,
   type ConcisenessLevel,
 } from "./lib/handoff_prompt";
+import type { ReasoningEffort, Verbosity } from "./lib/util";
 import UserExamplesEditor from "@/components/UserExamplesEditor";
+
+const REASONING_OPTIONS: ReasoningEffort[] = ["none", "low", "medium", "high", "xhigh"];
+const VERBOSITY_OPTIONS: Verbosity[] = ["low", "medium", "high"];
 
 const STORAGE_KEY = "vigilmd_custom_prompts";
 
 export interface CustomPrompts {
   conciseness_levels: Record<string, ConcisenessLevel>;
+  reasoning_effort: ReasoningEffort;
+  verbosity: Verbosity;
 }
 
 const DEFAULTS: CustomPrompts = {
   conciseness_levels: { ...default_conciseness_levels },
+  reasoning_effort: "none",
+  verbosity: "medium",
 };
 
 const LEVEL_KEYS = ["0", "50", "100"];
@@ -30,6 +38,8 @@ export function loadCustomPrompts(): CustomPrompts {
           ...default_conciseness_levels,
           ...parsed.conciseness_levels,
         },
+        reasoning_effort: parsed.reasoning_effort ?? DEFAULTS.reasoning_effort,
+        verbosity: parsed.verbosity ?? DEFAULTS.verbosity,
       };
     }
   } catch {
@@ -81,11 +91,14 @@ export default function PromptEditor({
     onBack(prompts);
   };
 
-  const isDefault = LEVEL_KEYS.every(
-    (k) =>
-      prompts.conciseness_levels[k].description ===
-      default_conciseness_levels[k].description
-  );
+  const isDefault =
+    LEVEL_KEYS.every(
+      (k) =>
+        prompts.conciseness_levels[k].description ===
+        default_conciseness_levels[k].description
+    ) &&
+    prompts.reasoning_effort === DEFAULTS.reasoning_effort &&
+    prompts.verbosity === DEFAULTS.verbosity;
 
   return (
     <div className="flex flex-col h-full">
@@ -106,6 +119,61 @@ export default function PromptEditor({
         The conciseness slider on the main screen interpolates between these
         settings.
       </p>
+
+      {/* AI Model Settings */}
+      <div className="mb-4 p-4 border border-border rounded-xl bg-white shadow-sm">
+        <h3 className="text-sm font-semibold text-washu-red mb-3">
+          AI Model Settings
+        </h3>
+        <div className="flex flex-wrap gap-6">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-muted">
+              Reasoning Effort
+            </label>
+            <select
+              value={prompts.reasoning_effort}
+              onChange={(e) =>
+                setPrompts((prev) => ({
+                  ...prev,
+                  reasoning_effort: e.target.value as ReasoningEffort,
+                }))
+              }
+              className="border border-border rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-washu-teal/40 focus:border-washu-teal/60 shadow-sm"
+            >
+              {REASONING_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-muted">
+              Verbosity
+            </label>
+            <select
+              value={prompts.verbosity}
+              onChange={(e) =>
+                setPrompts((prev) => ({
+                  ...prev,
+                  verbosity: e.target.value as Verbosity,
+                }))
+              }
+              className="border border-border rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-washu-teal/40 focus:border-washu-teal/60 shadow-sm"
+            >
+              {VERBOSITY_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          Higher reasoning effort increases accuracy but adds latency.
+          Verbosity controls output length.
+        </p>
+      </div>
 
       {/* Conciseness levels */}
       <div className="flex-grow flex flex-col gap-4 min-h-0 overflow-y-auto">

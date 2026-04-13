@@ -65,8 +65,7 @@ export default function Home() {
           ref={subtitleRef}
           className="mt-3 text-muted text-lg opacity-0"
         >
-          Clinical tools and applications from the Division of General
-          Internal Medicine.
+	    Test applications for patient safety and clinical productivity 
         </p>
       </div>
 

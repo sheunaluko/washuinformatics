@@ -6,6 +6,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import {
   get_individual_dashboard_info,
   get_handoff,
+  type ModelSettings,
 } from "./lib/util";
 import {
   handoff_response_structure,
@@ -114,6 +115,11 @@ export default function VigilMD({
 
   const ai_model = "gpt-5.4";
 
+  const modelSettings: ModelSettings = {
+    reasoning: { effort: customPrompts?.reasoning_effort ?? "none" },
+    verbosity: customPrompts?.verbosity ?? "medium",
+  };
+
   useEffect(() => {
     const initial = DASHBOARD_TYPES.reduce(
       (acc, t) => ({ ...acc, [t]: false }),
@@ -138,6 +144,7 @@ export default function VigilMD({
           hp: note,
           dashboard_name: dashboardName,
           model: ai_model,
+          modelSettings,
         });
 
         setLoadingStates((prev) => ({ ...prev, [dashboardName]: false }));
@@ -184,6 +191,7 @@ export default function VigilMD({
         user_examples: examplesBlock || undefined,
         response_format: Handoff_Response_Format,
         model: ai_model,
+        modelSettings,
       });
       debug.add("handoff_response", response);
       setGeneratedHandoff(response as HandoffResponse);

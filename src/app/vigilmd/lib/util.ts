@@ -1,6 +1,13 @@
-import { llmCall } from "@/lib/client_llm_gateway";
+import { llmCall, type ReasoningEffort, type Verbosity } from "@/lib/client_llm_gateway";
 import { get_logger } from "@/lib/logger";
 import { debug } from "@/lib/debug";
+
+export type { ReasoningEffort, Verbosity };
+
+export interface ModelSettings {
+  reasoning?: { effort: ReasoningEffort };
+  verbosity?: Verbosity;
+}
 import * as prompts from "./prompts";
 import { generate_prompt as generate_hp_prompt } from "./hp";
 
@@ -11,8 +18,9 @@ export const default_model = "gpt-5.4";
 export async function generate_hp(ops: {
   clinical_information: string;
   model?: string;
+  modelSettings?: ModelSettings;
 }): Promise<string> {
-  const { clinical_information, model } = ops;
+  const { clinical_information, model, modelSettings } = ops;
 
   const prompt = generate_hp_prompt(clinical_information);
   const response = await llmCall({
@@ -26,6 +34,7 @@ export async function generate_hp(ops: {
       { role: "user", content: prompt },
     ],
     call_id: "vigilmd_generate_hp",
+    ...modelSettings,
   });
 
   debug.add("hp_content", response.content);
@@ -42,8 +51,9 @@ export async function generate_hp(ops: {
 export async function get_all_dashboard_info(ops: {
   hp: string;
   model?: string;
+  modelSettings?: ModelSettings;
 }): Promise<unknown[] | null> {
-  const { hp, model } = ops;
+  const { hp, model, modelSettings } = ops;
 
   const dashboard_prompt = prompts.generate_quick_prompt(hp, [
     "medication_review",
@@ -64,6 +74,7 @@ export async function get_all_dashboard_info(ops: {
       },
       { role: "user", content: dashboard_prompt },
     ],
+    ...modelSettings,
   });
 
   debug.add("content", response.content);
@@ -85,8 +96,9 @@ export async function get_individual_dashboard_info(ops: {
   dashboard_name: string;
   model?: string;
   prompt_overrides?: Record<string, string>;
+  modelSettings?: ModelSettings;
 }): Promise<unknown[] | null> {
-  const { hp, dashboard_name, model, prompt_overrides } = ops;
+  const { hp, dashboard_name, model, prompt_overrides, modelSettings } = ops;
 
   const dashboard_prompt = prompts.generate_full_prompt(hp, dashboard_name, prompt_overrides);
   log("Generated dashboard prompt: " + dashboard_prompt);
@@ -102,6 +114,7 @@ export async function get_individual_dashboard_info(ops: {
       { role: "user", content: dashboard_prompt },
     ],
     call_id: `vigilmd_${dashboard_name}`,
+    ...modelSettings,
   });
 
   debug.add(`${dashboard_name}_content`, response.content);
@@ -126,6 +139,7 @@ export async function get_handoff(ops: {
   response_format: unknown;
   model?: string;
   user_examples?: string;
+  modelSettings?: ModelSettings;
 }): Promise<unknown> {
   const {
     patient_information,
@@ -135,6 +149,7 @@ export async function get_handoff(ops: {
     response_format,
     model,
     user_examples,
+    modelSettings,
   } = ops;
 
   let prompt = prompt_template
@@ -156,6 +171,7 @@ export async function get_handoff(ops: {
     ],
     response_format,
     call_id: "vigilmd_handoff",
+    ...modelSettings,
   });
 
   log("Received handoff response!");

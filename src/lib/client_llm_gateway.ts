@@ -13,6 +13,9 @@ export interface LLMMessage {
   content: string;
 }
 
+export type ReasoningEffort = "none" | "low" | "medium" | "high" | "xhigh";
+export type Verbosity = "low" | "medium" | "high";
+
 export interface LLMRequest {
   model: string;
   messages: LLMMessage[];
@@ -20,6 +23,8 @@ export interface LLMRequest {
   temperature?: number;
   max_tokens?: number;
   call_id?: string;
+  reasoning?: { effort: ReasoningEffort };
+  verbosity?: Verbosity;
 }
 
 export interface LLMResponse {
@@ -31,7 +36,7 @@ export interface LLMResponse {
 // ─── Gateway ──────────────────────────────────────────────────────
 
 export async function llmCall(request: LLMRequest): Promise<LLMResponse> {
-  const { model, messages, response_format, temperature, max_tokens, call_id } = request;
+  const { model, messages, response_format, temperature, max_tokens, call_id, reasoning, verbosity } = request;
 
   const id = call_id || `call_${++callCounter}`;
   const isStructured = !!response_format;
@@ -39,7 +44,7 @@ export async function llmCall(request: LLMRequest): Promise<LLMResponse> {
   debug.add(`${id}_request`, request);
 
   // Client-side translation: Chat Completions → Responses API
-  const body = toResponsesAPI({ model, messages, response_format, temperature, max_tokens });
+  const body = toResponsesAPI({ model, messages, response_format, temperature, max_tokens, reasoning, verbosity });
   debug.add(`${id}_body`, body);
 
   const startMs = Date.now();

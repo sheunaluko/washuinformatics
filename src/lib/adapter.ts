@@ -1,4 +1,4 @@
-import type { LLMMessage } from "./client_llm_gateway";
+import type { LLMMessage, ReasoningEffort, Verbosity } from "./client_llm_gateway";
 
 /**
  * Translates Chat Completions request args → Responses API body format.
@@ -9,8 +9,10 @@ export function toResponsesAPI(opts: {
   response_format?: unknown;
   temperature?: number;
   max_tokens?: number;
+  reasoning?: { effort: ReasoningEffort };
+  verbosity?: Verbosity;
 }): Record<string, unknown> {
-  const { model, messages, response_format, temperature, max_tokens } = opts;
+  const { model, messages, response_format, temperature, max_tokens, reasoning, verbosity } = opts;
 
   const body: Record<string, unknown> = {
     model,
@@ -36,6 +38,19 @@ export function toResponsesAPI(opts: {
     } else {
       body.text = { format: response_format };
     }
+  }
+
+  // Reasoning effort
+  if (reasoning) body.reasoning = reasoning;
+
+  // Verbosity — merge into existing body.text (which may have format from structured output)
+  if (verbosity) {
+    body.text = { ...(body.text as Record<string, unknown> | undefined), verbosity };
+  }
+
+  // temperature is only valid with reasoning effort "none"; drop it otherwise
+  if (reasoning && reasoning.effort !== "none") {
+    delete body.temperature;
   }
 
   return body;
