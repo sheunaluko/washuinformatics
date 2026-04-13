@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WashU GIM Informatics",
+  title: "WashU Medicine Test Applications",
   description:
     "Clinical tools and applications from WashU Department of Informatics",
 };

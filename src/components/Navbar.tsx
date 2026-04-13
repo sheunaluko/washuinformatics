@@ -11,7 +11,7 @@ export default function Navbar() {
             <span className="text-white font-bold text-sm">W</span>
           </div>
           <span className="font-semibold text-foreground">
-            WashU GIM Informatics
+            WashU Medicine Test Applications
           </span>
         </Link>
       </div>

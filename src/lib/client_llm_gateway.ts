@@ -1,6 +1,7 @@
 import { get_logger } from "./logger";
 import { debug } from "./debug";
 import { toResponsesAPI, fromResponsesAPI } from "./adapter";
+import { consumeSSEStream } from "./sse";
 
 const log = get_logger({ id: "llm_gateway" });
 
@@ -65,7 +66,7 @@ export async function llmCall(request: LLMRequest): Promise<LLMResponse> {
       throw new Error(`LLM gateway error: ${res.status} ${errText}`);
     }
 
-    const data = await res.json();
+    const data = await consumeSSEStream(res);
     debug.add(`${id}_raw_response`, data);
 
     // Client-side wrapping: Responses API → normalized response

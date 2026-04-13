@@ -3,7 +3,7 @@ import path from "path";
 import ReadmeViewer from "./ReadmeViewer";
 
 export const metadata = {
-  title: "How It Works | WashU GIM Informatics",
+  title: "How It Works | WashU Medicine Test Applications",
   description: "Architecture and technical overview",
 };
 

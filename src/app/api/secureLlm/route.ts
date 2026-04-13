@@ -35,6 +35,20 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: errText }, { status: response.status });
     }
 
+    // If upstream returns SSE, pipe the stream straight through
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("text/event-stream")) {
+      return new Response(response.body, {
+        status: response.status,
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
+    }
+
+    // Fallback: non-streaming JSON response
     const data = await response.json();
     return Response.json(data);
   } catch (err: unknown) {

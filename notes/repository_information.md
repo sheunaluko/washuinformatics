@@ -1,7 +1,7 @@
 # Repository Information
 
 ## Overview
-WashU GIM Informatics — clinical tools and applications from the Division of General Internal Medicine at Washington University in St. Louis.
+WashU Medicine Test Applications — clinical tools and applications from the Division of General Internal Medicine at Washington University in St. Louis.
 
 ## Tech Stack
 - **Framework:** Next.js 16 (App Router, TypeScript)

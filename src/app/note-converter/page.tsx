@@ -1,7 +1,7 @@
 import NoteConverter from "./NoteConverter";
 
 export const metadata = {
-  title: "Note Converter | WashU GIM Informatics",
+  title: "Note Converter | WashU Medicine Test Applications",
   description:
     "Convert progress notes into discharge summaries using AI",
 };

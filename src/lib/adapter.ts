@@ -17,6 +17,7 @@ export function toResponsesAPI(opts: {
   const body: Record<string, unknown> = {
     model,
     input: (messages || []).map((m) => ({ type: "message", ...m })),
+    stream: true,
   };
 
   if (temperature !== undefined) body.temperature = temperature;

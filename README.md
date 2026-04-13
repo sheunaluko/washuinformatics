@@ -1,6 +1,6 @@
-# WashU GIM Informatics
+# WashU Medicine Test Applications
 
-Clinical tools and applications from the Division of General Internal Medicine at Washington University in St. Louis.
+Clinical tools and applications created as prototypes 
 
 ## Applications
 

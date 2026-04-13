@@ -59,7 +59,7 @@ export default function Home() {
           ref={titleRef}
           className="text-3xl font-bold text-foreground opacity-0"
         >
-          WashU GIM Informatics
+          WashU Medicine Test Applications
         </h1>
         <p
           ref={subtitleRef}
